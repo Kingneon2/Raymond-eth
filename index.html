@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>@Raymondeth – Portfolio</title>
+  <style>
+    /* ---------- RESET & BASE ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* ---------- SPLASH SCREEN ---------- */
+    #splash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      cursor: pointer;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    #splash img {
+      max-width: 200px;
+      width: 60%;
+      height: auto;
+      display: block;
+      margin-bottom: 2rem;
+      filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.3));
+      transition: transform 0.3s;
+    }
+    #splash img:hover {
+      transform: scale(1.05);
+    }
+    #splash .prompt {
+      font-size: 1.2rem;
+      color: #aaa;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 300;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    #splash.hidden {
+      opacity: 0;
+      transform: scale(1.1);
+      pointer-events: none;
+    }
+
+    /* ---------- MAIN CONTENT ---------- */
+    .main-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 4rem 2rem 5rem;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+    .main-content.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ---------- SECTIONS ---------- */
+    .section {
+      margin-bottom: 5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* Verified + subscribers */
+    .verified-row {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .verified-row img {
+      height: 60px;
+      width: auto;
+    }
+    .sub-count {
+      font-size: 2.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f0b429, #d4a017);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .sub-label {
+      font-size: 1.4rem;
+      color: #ccc;
+      margin-top: 0.2rem;
+    }
+    .sub-count span {
+      font-weight: 300;
+      color: #fff;
+      -webkit-text-fill-color: #fff;
+    }
+
+    /* Floating logos (Telegram, X) */
+    .floating-logos {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 3rem 5rem;
+      margin: 2rem 0;
+    }
+    .logo-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+    .logo-item:hover {
+      transform: scale(1.05);
+    }
+    .logo-item img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+    }
+    .logo-item .label {
+      font-size: 1rem;
+      color: #888;
+      font-weight: 400;
+    }
+    .logo-item .value {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .logo-item .username {
+      font-size: 1.1rem;
+      color: #aaa;
+    }
+
+    /* FX Trader */
+    .fx-section {
+      margin: 3rem 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .fx-section img {
+      width: 100px;
+      height: auto;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.2));
+    }
+    .fx-section h2 {
+      font-size: 2.4rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+    }
+    .fx-section h2 span {
+      font-weight: 700;
+      color: #f0b429;
+    }
+
+    /* Roles (Degenist, Raider, etc.) */
+    .roles {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem 2.5rem;
+      margin-top: 2rem;
+    }
+    .role-badge {
+      background: rgba(255, 215, 0, 0.08);
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      border-radius: 60px;
+      padding: 0.8rem 2rem;
+      font-size: 1.4rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      color: #f0b429;
+      transition: all 0.3s;
+      backdrop-filter: blur(4px);
+    }
+    .role-badge:hover {
+      background: #f0b429;
+      color: #0a0a0a;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(240, 180, 41, 0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .sub-count { font-size: 2rem; }
+      .sub-label { font-size: 1rem; }
+      .logo-item img { width: 50px; height: 50px; }
+      .logo-item .value { font-size: 1.3rem; }
+      .fx-section h2 { font-size: 1.8rem; }
+      .role-badge { font-size: 1rem; padding: 0.6rem 1.5rem; }
+      .verified-row img { height: 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SPLASH SCREEN -->
+  <div id="splash">
+    <img src="eth-logo.png" alt="ETH Logo" />
+    <div class="prompt">⬇ Tap the ETH logo ⬇</div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content" id="mainContent">
+
+    <!-- Section: Verified + Subscribers -->
+    <div class="section">
+      <div class="verified-row">
+        <img src="verified-logo.png" alt="Verified" />
+        <div>
+          <div class="sub-count">486 <span>subscribers</span></div>
+          <div class="sub-label">on the raymond.eth telegram channel and counting</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Logos: Telegram & X -->
+    <div class="section">
+      <div class="floating-logos">
+        <!-- Telegram -->
+        <a href="https://t.me/Raymondethofficial" target="_blank" class="logo-item">
+          <img src="telegram-logo.png" alt="Telegram" />
+          <span class="label">Telegram</span>
+        </a>
+        <!-- X -->
+        <div class="logo-item">
+          <img src="x-logo.png" alt="X" />
+          <span class="label">X Account</span>
+          <span class="value">1,535</span>
+          <span class="username">@probably_yours</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FX Trader -->
+    <div class="section fx-section">
+      <img src="fx-logo.png" alt="FX Trader" />
+      <h2><span>FX</span> Trader</h2>
+    </div>
+
+    <!-- Roles -->
+    <div class="section">
+      <div class="roles">
+        <span class="role-badge">Degenist</span>
+        <span class="role-badge">Raider</span>
+        <span class="role-badge">Shiller</span>
+        <span class="role-badge">Community Manager</span>
+        <span class="role-badge">Developer</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- AUDIO (hidden) -->
+  <audio id="bgMusic" src="adufe.mp3" preload="auto"></audio>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const splash = document.getElementById('splash');
+      const main = document.getElementById('mainContent');
+      const audio = document.getElementById('bgMusic');
+
+      function dismissSplash() {
+        // Play audio (user gesture needed)
+        audio.play().catch(e => console.log('Audio play error:', e));
+
+        splash.style.boxShadow = 'inset 0 0 100px rgba(255,215,0,0.8)';
+        setTimeout(() => {
+          splash.classList.add('hidden');
+          setTimeout(() => {
+            main.classList.add('visible');
+            splash.style.boxShadow = 'none';
+          }, 800);
+        }, 300);
+      }
+
+      splash.addEventListener('click', dismissSplash);
+      splash.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        dismissSplash();
+      });
+    });
+  </script>
+
+</body>
+</html>
