@@ -239,12 +239,7 @@
   footer .back-top:hover{background:var(--gold); color:var(--ink); border-color:var(--gold);}
   .now-playing{display:flex; align-items:center; gap:.7rem;}
   #footerCanvas{width:70px; height:22px;}
-  #muteBtn{
-    background:none; border:1px solid var(--line); color:var(--gold-bright);
-    font-family:'JetBrains Mono', monospace; font-size:.75rem; padding:.35rem .6rem;
-    border-radius:2px; cursor:pointer; transition:all .25s;
-  }
-  #muteBtn:hover{background:var(--gold); color:var(--ink);}
+  .np-label{font-family:'JetBrains Mono', monospace; font-size:.65rem; letter-spacing:2px; color:var(--gold-bright);}
 
   @media (max-width:600px){
     .hero{padding:4rem 1.2rem 6rem;}
@@ -344,7 +339,7 @@
       <span>© raymond.eth</span>
       <div class="now-playing">
         <canvas id="footerCanvas"></canvas>
-        <button id="muteBtn">🔊 SOUND ON</button>
+        <span class="np-label">NOW PLAYING</span>
       </div>
       <span><a href="https://t.me/Raymondethofficial" target="_blank">Telegram</a> · <a href="#" target="_blank">X</a></span>
       <a href="#" class="back-top">Back to top ↑</a>
@@ -363,9 +358,16 @@
     const vizLabel = document.getElementById('vizLabel');
     const splashCanvas = document.getElementById('splashCanvas');
     const footerCanvas = document.getElementById('footerCanvas');
-    const muteBtn = document.getElementById('muteBtn');
     const watermark = document.getElementById('watermark');
     const progress = document.getElementById('progress');
+
+    /* ---------- try to start audio the instant the page loads ---------- */
+    /* browsers block unmuted autoplay before any interaction, so we try */
+    /* unmuted first and silently fall back to muted-until-tap if blocked */
+    audio.play().catch(function(){
+      audio.muted = true;
+      audio.play().catch(function(e){ console.log('Autoplay unavailable:', e); });
+    });
 
     /* ---------- ticker content (built once, duplicated for seamless loop) ---------- */
     const tickerItems = [
@@ -445,6 +447,7 @@
 
     /* ---------- splash dismiss ---------- */
     function dismissSplash() {
+      audio.muted = false;
       audio.play().catch(e => console.log('Audio play error:', e));
       setupAudio();
       setTimeout(() => {
@@ -460,12 +463,6 @@
       e.preventDefault();
       dismissSplash();
     }, { passive:false });
-
-    /* ---------- mute toggle ---------- */
-    muteBtn.addEventListener('click', function(){
-      audio.muted = !audio.muted;
-      muteBtn.textContent = audio.muted ? '🔇 SOUND OFF' : '🔊 SOUND ON';
-    });
 
     /* ---------- back to top ---------- */
     document.querySelector('.back-top').addEventListener('click', function(e){
