@@ -51,20 +51,20 @@
   /* ---------- SPLASH ---------- */
   #splash{
     position:fixed; inset:0; width:100vw; height:100vh;
-    background:radial-gradient(120% 120% at 50% 30%, #1c1a17 0%, #0b0b0c 60%, #050505 100%);
+    background:radial-gradient(120% 120% at 50% 30%, #ffffff 0%, var(--paper) 60%, var(--paper-dim) 100%);
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     z-index:9999; cursor:pointer;
     transition:opacity .9s ease, transform .9s ease;
   }
   #splash .glow{
     position:absolute; width:440px; height:440px; border-radius:50%;
-    background:radial-gradient(circle, rgba(200,162,74,0.35) 0%, rgba(200,162,74,0) 70%);
+    background:radial-gradient(circle, rgba(200,162,74,0.28) 0%, rgba(200,162,74,0) 70%);
     animation:breathe 3.2s ease-in-out infinite;
   }
   @keyframes breathe{0%,100%{transform:scale(.92);opacity:.7;}50%{transform:scale(1.08);opacity:1;}}
   #splash img.splash-logo{
     position:relative; max-width:150px; width:40%; height:auto; margin-bottom:1.8rem;
-    filter:drop-shadow(0 0 25px rgba(200,162,74,0.45));
+    filter:drop-shadow(0 8px 20px rgba(122,75,46,0.25));
     transition:transform .35s;
   }
   #splash:hover img.splash-logo{transform:scale(1.06) rotate(2deg);}
@@ -72,7 +72,7 @@
     position:relative;
     font-family:'JetBrains Mono', monospace;
     font-size:.85rem; letter-spacing:4px; text-transform:uppercase;
-    color:var(--gold-bright); font-weight:500; margin-bottom:2.4rem;
+    color:var(--bronze); font-weight:500; margin-bottom:2.4rem;
     animation:pulse 2s infinite;
   }
   @keyframes pulse{0%,100%{opacity:.45;}50%{opacity:1;}}
@@ -183,7 +183,7 @@
     will-change:transform;
   }
   .stat-card:hover{box-shadow:0 24px 46px rgba(122,75,46,0.22);}
-  .stat-card img{height:32px; margin-bottom:1.4rem;}
+  .stat-card svg{margin-bottom:1.4rem; display:block;}
   .stat-card .value{font-family:'Archivo Black', sans-serif; font-size:2.4rem; color:var(--ink); font-variant-numeric:tabular-nums;}
   .stat-card .label{font-family:'JetBrains Mono', monospace; font-size:.75rem; letter-spacing:2px; text-transform:uppercase; color:var(--mist); margin-top:.4rem;}
   .stat-card .handle{font-family:'JetBrains Mono', monospace; font-size:.85rem; color:var(--rust); margin-top:.6rem;}
@@ -282,7 +282,10 @@
       <div class="hero-inner">
         <span class="eyebrow"><span class="live-dot"></span>Verified Profile</span>
         <div class="verified-row">
-          <img src="verified-logo.png" alt="Verified" />
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Verified" role="img">
+            <circle cx="22" cy="22" r="21" fill="#3aa0f3"/>
+            <path d="M14 22.5L19.5 28L30 16" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
           <div class="sub-count"><span class="count" data-count-to="486">0</span><span>subscribers on raymond.eth</span></div>
         </div>
         <h1 class="hero-title">raymond<span>.eth</span></h1>
@@ -297,13 +300,19 @@
 
     <section class="stats-section" id="stats">
       <a href="https://t.me/Raymondethofficial" target="_blank" class="stat-card" data-tilt>
-        <img src="telegram-logo.png" alt="Telegram" />
+        <svg width="32" height="32" viewBox="0 0 32 32" aria-label="Telegram" role="img">
+          <circle cx="16" cy="16" r="16" fill="#29A9EA"/>
+          <path d="M7.2 15.8L22.6 9.9c.7-.26 1.32.17 1.09 1.22l-2.62 12.35c-.19.87-.7 1.08-1.42.68l-3.94-2.9-1.9 1.83c-.21.21-.39.39-.79.39l.28-4.02 7.32-6.62c.32-.28-.07-.44-.49-.16l-9.05 5.7-3.9-1.22c-.85-.27-.86-.85.18-1.25z" fill="#fff"/>
+        </svg>
         <div class="value"><span class="count" data-count-to="486">0</span></div>
         <div class="label">Telegram Channel</div>
         <div class="handle">t.me/Raymondethofficial</div>
       </a>
       <div class="stat-card" data-tilt>
-        <img src="x-logo.png" alt="X" />
+        <svg width="32" height="32" viewBox="0 0 32 32" aria-label="X" role="img">
+          <rect width="32" height="32" rx="6" fill="#000000"/>
+          <path d="M17.6 14.6L23.8 7.5h-1.5l-5.4 6.2-4.3-6.2H7.5l6.5 9.4-6.5 7.6h1.5l5.7-6.6 4.6 6.6h5.1l-6.8-9.9zm-2 2.3l-.7-1-5.3-7.5h2.3l4.2 6 .7 1 5.5 7.9h-2.3l-4.4-6.4z" fill="#fff"/>
+        </svg>
         <div class="value"><span class="count" data-count-to="1535">0</span></div>
         <div class="label">X Account</div>
         <div class="handle">@probably_yours</div>
@@ -315,7 +324,6 @@
     </div>
 
     <section class="fx-section">
-      <img src="fx-logo.png" alt="FX Trader" />
       <h2>FX <span>Trader</span></h2>
       <p>Reading charts, chasing pips and calling the flip before it's obvious.</p>
     </section>
