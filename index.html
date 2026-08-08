@@ -76,16 +76,6 @@
     animation:pulse 2s infinite;
   }
   @keyframes pulse{0%,100%{opacity:.45;}50%{opacity:1;}}
-  #splash .viz-wrap{
-    position:relative; width:min(420px, 70vw); text-align:center;
-  }
-  #splash .viz-label{
-    font-family:'JetBrains Mono', monospace; font-size:.65rem; letter-spacing:3px;
-    color:var(--mist); text-transform:uppercase; margin-bottom:.6rem; opacity:0;
-    transition:opacity .4s;
-  }
-  #splash .viz-label.on{opacity:1;}
-  #splashCanvas{width:100%; height:60px; display:block;}
   #splash.hidden{opacity:0; transform:scale(1.08); pointer-events:none;}
 
   /* ---------- MAIN ---------- */
@@ -237,9 +227,6 @@
   footer a{color:var(--gold-bright); text-decoration:none;}
   footer .back-top{border:1px solid var(--line); padding:.5rem 1rem; border-radius:2px; color:var(--paper); text-decoration:none;}
   footer .back-top:hover{background:var(--gold); color:var(--ink); border-color:var(--gold);}
-  .now-playing{display:flex; align-items:center; gap:.7rem;}
-  #footerCanvas{width:70px; height:22px;}
-  .np-label{font-family:'JetBrains Mono', monospace; font-size:.65rem; letter-spacing:2px; color:var(--gold-bright);}
 
   @media (max-width:600px){
     .hero{padding:4rem 1.2rem 6rem;}
@@ -262,10 +249,6 @@
     <div class="glow"></div>
     <img src="eth-logo.png" alt="ETH Logo" class="splash-logo" />
     <div class="prompt">Tap to enter</div>
-    <div class="viz-wrap">
-      <div class="viz-label" id="vizLabel">Now Playing — Adufe</div>
-      <canvas id="splashCanvas"></canvas>
-    </div>
   </div>
 
   <!-- MAIN CONTENT -->
@@ -337,10 +320,6 @@
 
     <footer>
       <span>© raymond.eth</span>
-      <div class="now-playing">
-        <canvas id="footerCanvas"></canvas>
-        <span class="np-label">NOW PLAYING</span>
-      </div>
       <span><a href="https://t.me/Raymondethofficial" target="_blank">Telegram</a> · <a href="#" target="_blank">X</a></span>
       <a href="#" class="back-top">Back to top ↑</a>
     </footer>
@@ -355,18 +334,31 @@
     const splash = document.getElementById('splash');
     const main = document.getElementById('mainContent');
     const audio = document.getElementById('bgMusic');
-    const vizLabel = document.getElementById('vizLabel');
-    const splashCanvas = document.getElementById('splashCanvas');
-    const footerCanvas = document.getElementById('footerCanvas');
     const watermark = document.getElementById('watermark');
     const progress = document.getElementById('progress');
 
-    /* ---------- try to start audio the instant the page loads ---------- */
-    /* browsers block unmuted autoplay before any interaction, so we try */
-    /* unmuted first and silently fall back to muted-until-tap if blocked */
-    audio.play().catch(function(){
-      audio.muted = true;
-      audio.play().catch(function(e){ console.log('Autoplay unavailable:', e); });
+    /* ---------- play adufe.mp3 ---------- */
+    /* request playback immediately on load */
+    function requestPlay(){
+      const p = audio.play();
+      if(p !== undefined){
+        p.then(function(){
+          console.log('adufe.mp3 is playing');
+        }).catch(function(err){
+          console.log('Play request blocked, will retry on first tap/click:', err);
+        });
+      }
+    }
+    audio.addEventListener('error', function(){
+      console.log('adufe.mp3 failed to load — check the file is named exactly "adufe.mp3" and sits next to this HTML file.');
+    });
+    requestPlay();
+    // browsers that blocked the immediate request will allow it on the
+    // very next interaction anywhere on the page — this catches that.
+    ['click','touchstart','keydown'].forEach(function(evt){
+      document.addEventListener(evt, function retryPlay(){
+        if(audio.paused) requestPlay();
+      }, { once:true });
     });
 
     /* ---------- ticker content (built once, duplicated for seamless loop) ---------- */
@@ -392,64 +384,9 @@
     buildTicker(document.getElementById('tickerLeft'));
     buildTicker(document.getElementById('tickerRight'));
 
-    /* ---------- audio visualizer ---------- */
-    let audioCtx, analyser, source, dataArray, vizStarted = false;
-
-    function setupAudio(){
-      if(vizStarted) return;
-      try{
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        source = audioCtx.createMediaElementSource(audio);
-        analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 64;
-        source.connect(analyser);
-        analyser.connect(audioCtx.destination);
-        dataArray = new Uint8Array(analyser.frequencyBinCount);
-        vizStarted = true;
-        vizLabel.classList.add('on');
-        requestAnimationFrame(drawViz);
-      }catch(e){ console.log('Audio visualizer unavailable:', e); }
-    }
-
-    function drawBars(canvas, barCount, gap){
-      const ctx = canvas.getContext('2d');
-      const dpr = window.devicePixelRatio || 1;
-      const w = canvas.clientWidth, h = canvas.clientHeight;
-      if(canvas.width !== w*dpr){ canvas.width = w*dpr; canvas.height = h*dpr; }
-      ctx.setTransform(dpr,0,0,dpr,0,0);
-      ctx.clearRect(0,0,w,h);
-      const barWidth = (w - gap*(barCount-1)) / barCount;
-      for(let i=0;i<barCount;i++){
-        let v = 0.15;
-        if(dataArray){
-          const idx = Math.floor(i * (dataArray.length/2) / barCount);
-          v = Math.max(0.08, dataArray[idx] / 255);
-        }
-        const barH = v * h;
-        const x = i*(barWidth+gap);
-        const grad = ctx.createLinearGradient(0,h-barH,0,h);
-        grad.addColorStop(0, '#f0cd7c');
-        grad.addColorStop(1, '#7a4b2e');
-        ctx.fillStyle = grad;
-        ctx.fillRect(x, h-barH, barWidth, barH);
-      }
-    }
-
-    function drawViz(){
-      if(analyser) analyser.getByteFrequencyData(dataArray);
-      drawBars(splashCanvas, 40, 3);
-      drawBars(footerCanvas, 16, 2);
-      requestAnimationFrame(drawViz);
-    }
-    /* idle bars before audio starts */
-    drawBars(splashCanvas, 40, 3);
-    drawBars(footerCanvas, 16, 2);
-
     /* ---------- splash dismiss ---------- */
     function dismissSplash() {
-      audio.muted = false;
-      audio.play().catch(e => console.log('Audio play error:', e));
-      setupAudio();
+      requestPlay();
       setTimeout(() => {
         splash.classList.add('hidden');
         setTimeout(() => { main.classList.add('visible'); }, 700);
